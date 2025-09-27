@@ -76,7 +76,6 @@ class GroupedScriptsHoverProvider {
     getJsonContext(document, position) {
         const text = document.getText();
         const offset = document.offsetAt(position);
-        // Find the groupedScripts section start
         const groupedScriptsMatch = text.match(/"groupedScripts"\s*:\s*\{/);
         if (!groupedScriptsMatch) {
             return [];
@@ -85,9 +84,7 @@ class GroupedScriptsHoverProvider {
         if (offset < groupedScriptsStart) {
             return [];
         }
-        // Extract the text from groupedScripts start to current position
         const relevantText = text.substring(groupedScriptsStart, offset);
-        // Track the JSON path by counting braces and finding keys
         const context = [];
         let braceDepth = 0;
         let currentKey = '';
@@ -106,10 +103,8 @@ class GroupedScriptsHoverProvider {
             if (char === '"') {
                 if (inString) {
                     inString = false;
-                    // Check if this is a key (followed by colon)
                     const nextNonWhitespace = relevantText.substring(i + 1).match(/^\s*:/);
                     if (nextNonWhitespace && currentKey) {
-                        // This is a key, check if it starts a new object
                         const afterColon = relevantText.substring(i + 1 + nextNonWhitespace[0].length);
                         const nextNonWhitespaceAfterColon = afterColon.match(/^\s*\{/);
                         if (nextNonWhitespaceAfterColon) {
@@ -139,10 +134,8 @@ class GroupedScriptsHoverProvider {
         return context;
     }
     findScriptPath(scripts, targetKey, jsonContext) {
-        // Try to find the script in the exact context first
         let currentObj = scripts;
         const contextPath = [];
-        // Navigate to the context
         for (const contextKey of jsonContext) {
             if (currentObj && typeof currentObj === 'object' && contextKey in currentObj) {
                 contextPath.push(contextKey);
@@ -151,16 +144,13 @@ class GroupedScriptsHoverProvider {
                     currentObj = next;
                 }
                 else {
-                    // Context leads to a string value, not an object
                     break;
                 }
             }
             else {
-                // Context path doesn't exist, fall back to broader search
                 break;
             }
         }
-        // Look for the target key in the current context
         if (currentObj && typeof currentObj === 'object' && targetKey in currentObj) {
             const value = currentObj[targetKey];
             if (typeof value === 'string') {
@@ -170,13 +160,11 @@ class GroupedScriptsHoverProvider {
                 };
             }
         }
-        // If not found in exact context, fall back to the original logic but prefer matches closer to the context
         const allMatches = [];
         const findInObject = (obj, currentPath = []) => {
             for (const [key, value] of Object.entries(obj)) {
                 const newPath = [...currentPath, key];
                 if (typeof value === 'string' && key === targetKey) {
-                    // Calculate how well this path matches the context
                     let contextMatch = 0;
                     for (let i = 0; i < Math.min(jsonContext.length, currentPath.length); i++) {
                         if (jsonContext[i] === currentPath[i]) {
@@ -205,7 +193,6 @@ class GroupedScriptsHoverProvider {
         if (allMatches.length === 1) {
             return { path: allMatches[0].path, command: allMatches[0].command };
         }
-        // Sort by context match (descending), then by depth (descending)
         allMatches.sort((a, b) => {
             if (a.contextMatch !== b.contextMatch) {
                 return b.contextMatch - a.contextMatch;
@@ -216,7 +203,7 @@ class GroupedScriptsHoverProvider {
     }
 }
 function activate(context) {
-    console.log('Grouped Scripts Runner extension is now active!');
+    console.log('Pkg Script Groups extension is now active!');
     const hoverProvider = vscode.languages.registerHoverProvider({ language: 'json', pattern: '**/package.json' }, new GroupedScriptsHoverProvider());
     const runScriptCommand = vscode.commands.registerCommand('grouped-scripts-runner.runScript', async (args) => {
         if (!args || !args.command) {
