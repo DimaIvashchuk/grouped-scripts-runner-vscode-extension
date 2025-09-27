@@ -1,4 +1,4 @@
-# Grouped Scripts Runner
+# Pkg Script Groups
 
 A VS Code extension that allows you to run nested scripts from `package.json` files using hover actions. Perfect for organizing complex build pipelines, testing suites, and development workflows.
 
@@ -55,7 +55,6 @@ The extension:
 ## Requirements
 
 - VS Code 1.104.0 or higher
-- Node.js and npm/npx installed in your system
 
 ## Extension Settings
 
