@@ -2,11 +2,11 @@
   "name": "grouped-scripts-runner",
   "displayName": "Pkg Script Groups",
   "description": "Run nested scripts from package.json groupedScripts field with hover support",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.85.0"
   },
-   "repository": {
+  "repository": {
     "type": "git",
     "url": "https://github.com/DimaIvashchuk/grouped-scripts-runner-vscode-extension"
   },
